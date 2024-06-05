@@ -7,16 +7,18 @@ import time
 driver = webdriver.Chrome()
 driver.get("https://www.ebay.com/")
 print(driver.current_url)
+print(driver.title)
 try:
-    search =WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID,"gh-ac")))
-finally:
+    waiting = WebDriverWait(driver, 10)
+    search = waiting.until(EC.presence_of_element_located((By.ID,"gh-ac")))
     search.clear()
-    search.send_keys("women watch")
-    search.send_keys(Keys. RETURN)
+    search.send_keys("Woman Watch")
+    search.send_keys(Keys.RETURN)
     print(driver.current_url)
     print(driver.title)
+finally:
+    driver.quit()
 
 time.sleep(5)
-driver.quit()
 
 
