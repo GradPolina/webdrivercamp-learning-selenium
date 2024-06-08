@@ -1,5 +1,3 @@
-import time
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -18,14 +16,24 @@ try:
     )
     rolex_checkbox.click()
 
-#3 Verify the first two result items contain “rolex” in their title
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 's-item__title'))
-    )
-    item_titles = driver.find_elements(By.CLASS_NAME, 's-item__title')
-    for title in item_titles[2:4]:
-        print(title.text)
-        assert 'rolex' in title.text.lower(), f"Title does not contain 'rolex' {title.text}"
+# (3) First two items - price & title items
+    results = driver.find_elements(By.XPATH, '//ul[@class="srp-results srp-grid clearfix"]//div[@class="s-item__wrapper clearfix"]')[:2]
+    items = []
+    for result in results:
+        title_items = result.find_element(By.CLASS_NAME, 's-item__title')
+        title = title_items.text
+        price_items = result.find_element(By.CLASS_NAME, 's-item__price')
+        price = price_items.text
+
+# (4) Verify first two result items contain “rolex” in their title
+        assert 'rolex' in title.lower(), f"Title does not contain 'rolex' {title}"
+
+# (5) Store title and price of the first two results in a variable
+        items.append({'title:', title, 'price:', price})
+
+    for item in items:
+        print(item)
+
 finally:
     driver.quit()
 
