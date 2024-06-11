@@ -24,18 +24,15 @@ try:
         title = title_items.text
         price_items = result.find_element(By.CLASS_NAME, 's-item__price')
         price = price_items.text
+        title_items.click()
+        time.sleep(5)
+        driver.switch_to.window(driver.window_handles[1])
 
 # Store title and price of the first two results in a variable
         items.append({'title:', title, 'price:', price})
 
 # Verify first two result items contain “rolex” in their title
         assert 'rolex' in title.lower(), f"Title does not contain 'rolex' {title}"
-
-# Open new TAB of items
-    for i, result in enumerate(results):
-        title_items = result.find_element(By.CLASS_NAME, 's-item__title')
-        title_items.click()
-        time.sleep(5)
 
 # Verify price and title new TAB
 
@@ -50,14 +47,14 @@ try:
     new_price = new_price_item.text
 
 # Compare with stored data
-    assert items[i]['title'] in new_title, f"Mismatch in title: {new_title}"
-    assert items[i]['price'] == new_price, f"Mismatch in price: {new_price}"
+    for i in results:
+        assert items[i]['title'] in new_title, f"Mismatch in title: {new_title}"
+        assert items[i]['price'] == new_price, f"Mismatch in price: {new_price}"
 
     driver.close()
 
     for item in items:
         print(item)
-
 
 finally:
     driver.quit()
