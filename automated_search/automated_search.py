@@ -88,10 +88,10 @@ try:
     time.sleep(5)
 
     # Last two items - title items
-    results = driver.find_elements(By.XPATH,'//ul[@class="srp-results srp-grid clearfix"]//div[@class="s-item__wrapper clearfix"]')[-2:]
+    results_casio = driver.find_elements(By.XPATH,'//ul[@class="srp-results srp-grid clearfix"]//div[@class="s-item__wrapper clearfix"]')[-2:]
     mismatches = []
-    for result in results:
-        title_items_casio = result.find_element(By.CLASS_NAME, 's-item__title')
+    for result_casio in results_casio:
+        title_items_casio = result_casio.find_element(By.CLASS_NAME, 's-item__title')
         title_casio = title_items_casio.text
         if 'Casio' not in title_casio:
             mismatches.append(title_casio)
