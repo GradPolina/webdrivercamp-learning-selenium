@@ -15,6 +15,7 @@ try:
         EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Rolex']"))
     )
     rolex_checkbox.click()
+    time.sleep(5)
 
 # First two items - price & title items
     results = driver.find_elements(By.XPATH, '//ul[@class="srp-results srp-grid clearfix"]//div[@class="s-item__wrapper clearfix"]')[:2]
@@ -24,37 +25,82 @@ try:
         title = title_items.text
         price_items = result.find_element(By.CLASS_NAME, 's-item__price')
         price = price_items.text
-        title_items.click()
-        time.sleep(5)
-        driver.switch_to.window(driver.window_handles[1])
-
-# Store title and price of the first two results in a variable
-        items.append({'title:', title, 'price:', price})
 
 # Verify first two result items contain “rolex” in their title
-        assert 'rolex' in title.lower(), f"Title does not contain 'rolex' {title}"
+        assert 'rolex' in title.lower(), f"Title does not contain 'rolex': {title}"
+
+# Story title and price (variable)
+        items.append({'title:', title, 'price:', price})
+
+# Print store (title, price)
+    for item in items:
+        print(item)
+
+    original_window = driver.current_window_handle
+
+# Switch first TAB
+    for result in results[:1]:
+        title_items = result.find_element(By.CLASS_NAME, 's-item__title')
+        title_items.click()
+        time.sleep(5)
+        driver.switch_to.window(driver.window_handles[-1])
+
+    driver.switch_to.window(original_window)
+
+# Switch second TAB
+    for result in results[1:2]:
+        title_items = result.find_element(By.CLASS_NAME, 's-item__title')
+        title_items.click()
+        time.sleep(5)
+        driver.switch_to.window(driver.window_handles[-1])
 
 # Verify price and title new TAB
-
     new_title_item = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'x-item-title__mainTitle'))
     )
     new_title = new_title_item.text
 
     new_price_item = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'x-price-primary'))
+        EC.presence_of_element_located((By.CLASS_NAME, 'ux-textspans'))
     )
     new_price = new_price_item.text
 
 # Compare with stored data
-    for i in results:
+    for i in items:
         assert items[i]['title'] in new_title, f"Mismatch in title: {new_title}"
         assert items[i]['price'] == new_price, f"Mismatch in price: {new_price}"
 
-    driver.close()
 
-    for item in items:
-        print(item)
+    driver.close()
+    driver.switch_to.window(original_window)
+
+# Uncheck Relex
+    rolex_checkbox = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Rolex']"))
+    )
+    rolex_checkbox.click()
+
+# Checkbox casio
+    casio_checkbox = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@aria-label='Casio']"))
+    )
+    casio_checkbox.click()
+    time.sleep(5)
+
+    # Last two items - title items
+    results = driver.find_elements(By.XPATH,'//ul[@class="srp-results srp-grid clearfix"]//div[@class="s-item__wrapper clearfix"]')[-2:]
+    mismatches = []
+    for result in results:
+        title_items_casio = result.find_element(By.CLASS_NAME, 's-item__title')
+        title_casio = title_items_casio.text
+        if 'Casio' not in title_casio:
+            mismatches.append(title_casio)
+    if mismatches:
+        print("Found mismatches title:")
+        for mismatch in mismatches:
+            print(mismatch)
+    else:
+        print("All titles contain 'Casio'.")
 
 finally:
     driver.quit()
